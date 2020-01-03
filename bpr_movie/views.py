@@ -42,12 +42,15 @@ def callback(request):
         print(msg['events'][0]['message']['type'])
         try:
             if message_type!='text':
-                line_bot_api.push_message(userid,TextSendMessage(text='Hi~我現在只能處理文字的訊息喔！'))
+                line_bot_api.reply_message(reply_token,TextSendMessage(text='Hi~我現在只能處理文字的訊息喔！'))
+                #line_bot_api.push_message(userid,TextSendMessage(text='Hi~我現在只能處理文字的訊息喔！'))
             elif check_user_db(userid) == False:
                 profile = line_bot_api.get_profile(userid)
                 insert_user_db(userid,profile.display_name)
-                line_bot_api.push_message(userid,TextSendMessage(text='Hi!歡迎新使用者'))
-                #line_bot_api.push_message(userid,ImageSendMessage(original_content_url='https://m.media-amazon.com/images/M/MV5BMjA1MTc1NTg5NV5BMl5BanBnXkFtZTgwOTM2MDEzNzE@._V1_SX300.jpg',preview_image_url='https://m.media-amazon.com/images/M/MV5BMjA1MTc1NTg5NV5BMl5BanBnXkFtZTgwOTM2MDEzNzE@._V1_SX300.jpg'))
+                line_bot_api.reply_message(reply_token,TextSendMessage(text='Hi!歡迎新使用者'))
+                #line_bot_api.reply_message(reply_token,ImageSendMessage(original_content_url='https://m.media-amazon.com/images/M/MV5BMjA1MTc1NTg5NV5BMl5BanBnXkFtZTgwOTM2MDEzNzE@._V1_SX300.jpg',preview_image_url='https://m.media-amazon.com/images/M/MV5BMjA1MTc1NTg5NV5BMl5BanBnXkFtZTgwOTM2MDEzNzE@._V1_SX300.jpg'))
+                #line_bot_api.push_message(userid,TextSendMessage(text='Hi!歡迎新使用者'))
+                line_bot_api.push_message(userid,ImageSendMessage(original_content_url='https://m.media-amazon.com/images/M/MV5BMjA1MTc1NTg5NV5BMl5BanBnXkFtZTgwOTM2MDEzNzE@._V1_SX300.jpg',preview_image_url='https://m.media-amazon.com/images/M/MV5BMjA1MTc1NTg5NV5BMl5BanBnXkFtZTgwOTM2MDEzNzE@._V1_SX300.jpg'))
             else:
                 #line_bot_api.push_message(userid,TextSendMessage(text='想知道什麼呢？'))
                 message_text = str(msg['events'][0]['message']['text'])
@@ -56,7 +59,9 @@ def callback(request):
                     json_obj = get_information_title(movie_title)
                     response_message = '你喜歡'+ json_obj['Title']+' ('+json_obj['Year']+')'
                     response_img = json_obj['Poster']
-                    line_bot_api.push_message(userid,TextSendMessage(text=response_message))
+                    line_bot_api.reply_message(reply_token,TextSendMessage(text=response_message))
+                    #line_bot_api.reply_message(reply_token,ImageSendMessage(original_content_url=response_img,preview_image_url=response_img))
+                    #line_bot_api.push_message(userid,TextSendMessage(text=response_message))
                     line_bot_api.push_message(userid,ImageSendMessage(original_content_url=response_img,preview_image_url=response_img))
                     movielens_id = search_for_movieid_imdbid_db(json_obj['imdbID'])
                     print(movielens_id)
@@ -64,7 +69,8 @@ def callback(request):
                 elif message_text.find('推薦')!=-1:
                     if(len(generate_movielens_id_list(userid))>=5):
                         response_message = '推給你好東西，讓我算一下先'
-                        line_bot_api.push_message(userid,TextSendMessage(text=response_message))
+                        #line_bot_api.push_message(userid,TextSendMessage(text=response_message))
+                        line_bot_api.reply_message(reply_token,TextSendMessage(text=response_message))
                         recommendation_list = bpr_recommendation(generate_movielens_id_list(userid))
                         year = []
                         title = []
@@ -74,43 +80,56 @@ def callback(request):
                         json_obj = get_information_imdb_id(search_for_imdb_by_movielens_id(new_recommendation[-1][0]))
                         response_message = '我推薦這部給你：'+json_obj['Title']+' ('+json_obj['Year']+')'
                         response_img = json_obj['Poster']
+                        #line_bot_api.reply_message(reply_token,TextSendMessage(text=response_message))
+                        #line_bot_api.reply_message(reply_token,ImageSendMessage(original_content_url=response_img,preview_image_url=response_img))
                         line_bot_api.push_message(userid,TextSendMessage(text=response_message))
                         line_bot_api.push_message(userid,ImageSendMessage(original_content_url=response_img,preview_image_url=response_img))
                     else:
                         response_message = '請先告訴我你喜歡哪五部電影喔！'
-                        line_bot_api.push_message(userid,TextSendMessage(text=response_message))
+                        #line_bot_api.push_message(userid,TextSendMessage(text=response_message))
+                        line_bot_api.reply_message(reply_token,TextSendMessage(text=response_message))
                         movie_list = random_5_movie()
                         for movie in movie_list:
                             line_bot_api.push_message(userid,TextSendMessage(text=movie))
+                            #line_bot_api.reply_message(reply_token,TextSendMessage(text=movie))
                 elif message_text.find('紀錄')!=-1:
                     history_list = get_userlike_fromdb(userid)
                     response_message = '你最近喜歡的電影'
-                    line_bot_api.push_message(userid,TextSendMessage(text=response_message))
+                    line_bot_api.reply_message(reply_token,TextSendMessage(text=response_message))
                     for i in range(0,5):
                         line_bot_api.push_message(userid,TextSendMessage(text=history_list[i]))
+                        #line_bot_api.reply_message(reply_token,TextSendMessage(text=history_list[i]))
                 elif message_text.find('相關資訊')!=-1:
                     movie_title = deal_user_like(message_text)
                     try:
                         json_obj = get_information_title(movie_title)
                         response_message = json_obj['Title']+' ('+json_obj['Year']+')'
                         response_img = json_obj['Poster']
-                        line_bot_api.push_message(userid,TextSendMessage(text=response_message))
+                        line_bot_api.reply_message(reply_token,TextSendMessage(text=response_message))
+                        #line_bot_api.reply_message(reply_token,ImageSendMessage(original_content_url=response_img,preview_image_url=response_img))
+                        #line_bot_api.push_message(userid,TextSendMessage(text=response_message))
                         line_bot_api.push_message(userid,ImageSendMessage(original_content_url=response_img,preview_image_url=response_img))
 
                         response_message = json_obj['Actors']
                         line_bot_api.push_message(userid,TextSendMessage(text=response_message))
+                        #line_bot_api.reply_message(reply_token,TextSendMessage(text=response_message))
 
                         response_message= 'https://www.imdb.com/title/'+json_obj['imdbID']+'/'
                         line_bot_api.push_message(userid,TextSendMessage(text=response_message))
+                        #line_bot_api.reply_message(reply_token,TextSendMessage(text=response_message))
                     except:
-                        line_bot_api.push_message(userid,TextSendMessage(text='抱歉～找不到這部電影耶～'))
+                        #line_bot_api.push_message(userid,TextSendMessage(text='抱歉～找不到這部電影耶～'))
+                        line_bot_api.reply_message(reply_token,TextSendMessage(text='抱歉～找不到這部電影耶～'))
                 elif message_text.find('最近電影')!=-1:
                         latest_movie = get_latest_movie_tmdb()
-                        line_bot_api.push_message(userid,TextSendMessage(text='給你最近很夯的電影！'))
+                        line_bot_api.reply_message(reply_token,TextSendMessage(text='給你最近很夯的電影！'))
+                        #line_bot_api.push_message(userid,TextSendMessage(text='給你最近很夯的電影！'))
                         for movie in latest_movie[:5]:
                             response_message= movie['original_title']
                             line_bot_api.push_message(userid,TextSendMessage(text=response_message))
+                            #line_bot_api.reply_message(reply_token,TextSendMessage(text=response_message))
                             response_img = 'https://image.tmdb.org/t/p/original'+movie['poster_path']
+                            #line_bot_api.reply_message(reply_token,ImageSendMessage(original_content_url=response_img,preview_image_url=response_img))
                             line_bot_api.push_message(userid,ImageSendMessage(original_content_url=response_img,preview_image_url=response_img))
                     
         except InvalidSignatureError:
