@@ -11,9 +11,9 @@ from linebot.models import MessageEvent, TextMessage, TextSendMessage
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponseBadRequest, HttpResponseForbidden, HttpResponseNotFound,HttpResponseServerError
 
-line_bot_api = LineBotApi('KHwsb+/bft/w7SHeotwLaiZZ22THFxUVbxzEYgJV2oMLUvZ2Nv7yAbKkt+vlvzVMUPnXG0Nd/yRk14f3mD48QnD1ArMXg01/zwwwTj7YTn7Am+7ctFmoo1UTT1xeRQjPPhH71U9PmiMsgLf0tj6PclGUYhWQfeY8sLGRXgo3xvw=')
-handler = WebhookHandler('a262dce10aa2b4d393eba0168dbe82e2')
-parser = WebhookParser('a262dce10aa2b4d393eba0168dbe82e2')
+line_bot_api = LineBotApi('na')
+handler = WebhookHandler('na')
+parser = WebhookParser('na')
 
 from django.conf import settings
 from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest
