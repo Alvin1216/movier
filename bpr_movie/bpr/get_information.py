@@ -1,7 +1,7 @@
 import requests,json
 
 def get_information(imdb_id):
-    query = 'http://omdbapi.com/?'+'i='+str(imdb_id)+'&apikey=8c573e82&plot=full'
+    query = 'http://omdbapi.com/?'+'i='+str(imdb_id)+'&apikey=<api_key>'
     #print(query)
     r = requests.get(query)
     json_obj = json.loads(r.text)
